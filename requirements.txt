@@ -1,0 +1,10 @@
+# Core dependencies
+fastapi==0.115.0
+uvicorn[standard]==0.31.1
+
+# (Optional, but recommended for later steps)
+python-dotenv==1.0.1   # For environment variables
+psycopg2-binary==2.9.9 # PostgreSQL driver (for future DB step)
+sqlalchemy==2.0.35     # ORM for models
+passlib[bcrypt]==1.7.4 # For password hashing (for login later)
+python-jose[cryptography]==3.3.0 # For JWT tokens later
