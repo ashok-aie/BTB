@@ -1,0 +1,15 @@
+<h2>Word {{ request.session.current_index + 1 }} of {{ request.session.quiz_words | length }}</h2>
+
+<audio controls autoplay>
+    <source src="{{ audio_url }}" type="audio/mpeg">
+</audio>
+
+<form method="post" action="/spell-mastery/submit">
+    <input type="hidden" name="word_id" value="{{ word.id }}">
+    <input type="text" name="spelling" placeholder="Enter spelling" required>
+    <button type="submit">Submit</button>
+</form>
+
+{% if result %}
+<p>{{ result }}</p>
+{% endif %}

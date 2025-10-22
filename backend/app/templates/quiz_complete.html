@@ -1,0 +1,12 @@
+<h1>Quiz Complete!</h1>
+<ul>
+    {% for r in results %}
+    <li>
+        Word ID: {{ r.word_id }} -
+        {% if r.correct %}✅ Correct{% else %}❌ Wrong{% endif %}
+        (Attempted: {{ r.attempted_spelling }})
+    </li>
+    {% endfor %}
+</ul>
+
+<a href="/spell-mastery"><button>Start New Quiz</button></a>
