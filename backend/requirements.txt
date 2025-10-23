@@ -37,3 +37,7 @@ python-dotenv==1.0.1      # Load .env files for settings
 jinja2==3.2.1
 python-multipart
 gTTS
+itsdangerous
+python-multipart 
+fastapi
+pytz

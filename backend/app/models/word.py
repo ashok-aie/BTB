@@ -1,5 +1,13 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
+from sqlalchemy.orm import relationship
 from app.db.database import Base
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+# EST/EDT timezone
+eastern = ZoneInfo("America/New_York")
+
+timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(eastern))
 
 class Word(Base):
     __tablename__ = "words"
@@ -11,17 +19,20 @@ class Word(Base):
     example = Column(String)
     prefixes_suffixes = Column(String)
     root_word = Column(String)
-    complexity = Column(String)
     grade_level = Column(String)
     bee_level = Column(String)
-    frequency = Column(Integer)
     lexical_level = Column(String)
     
-class UserWordStats(Base):
-    __tablename__ = "user_word_stats"
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+class UserActivity(Base):
+    __tablename__ = "user_activities"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))  # optional if tracking by user
     word_id = Column(Integer, ForeignKey("words.id"))
-    attempts = Column(Integer, default=0)
-    correct = Column(Integer, default=0)
-    incorrect = Column(Integer, default=0)
+    user_input = Column(String)
+    is_correct = Column(Boolean)
+    timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(eastern))
+
+    # relationships
+    user = relationship("User", back_populates="activities")
+    word = relationship("Word")

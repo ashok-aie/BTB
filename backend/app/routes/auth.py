@@ -50,10 +50,7 @@ def login(email: str = Form(...), password: str = Form(...), db: Session = Depen
     db_user = db.query(User).filter(User.email == email).first()
     if not db_user or not pwd_context.verify(password, db_user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-        # Optionally, redirect back with error
-        #return templates.TemplateResponse("login.html", {"request": {}, "error": "Invalid credentials"})
-    
-
+        
     # Create JWT token
     expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     token_data = {"sub": db_user.email, "exp": expire}
