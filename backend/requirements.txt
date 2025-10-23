@@ -9,7 +9,7 @@ uvicorn[standard] # ASGI server with optional extras (watchfiles, websockets)
 # Database
 # -------------------------
 SQLAlchemy         # ORM for database interaction
-psycopg2-binary==2.9.7   # PostgreSQL driver
+psycopg2-binary==2.9.8   # PostgreSQL driver
 alembic           # Database migrations
 
 # -------------------------
