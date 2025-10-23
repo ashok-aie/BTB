@@ -29,6 +29,10 @@ app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(quiz.router, tags=["quiz"])
 app.include_router(spell_mastery.router)
 
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/login")
+
 # Login page
 @app.get("/login")
 def login_page(request: Request):
