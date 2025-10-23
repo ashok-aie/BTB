@@ -10,18 +10,18 @@ uvicorn[standard] # ASGI server with optional extras (watchfiles, websockets)
 # -------------------------
 SQLAlchemy         # ORM for database interaction
 psycopg2-binary==2.9.7   # PostgreSQL driver
-alembic==1.12.3           # Database migrations
+alembic           # Database migrations
 
 # -------------------------
 # Pydantic v2 for settings & validation
 # -------------------------
-pydantic==2.12.2          # Data validation & serialization
-pydantic-settings==2.12.2 # Settings management (BaseSettings replacement in v2)
+pydantic          # Data validation & serialization
+pydantic-settings # Settings management (BaseSettings replacement in v2)
 
 # -------------------------
 # Password hashing
 # -------------------------
-passlib[bcrypt]==1.7.4    # Password hashing library with bcrypt support
+passlib[bcrypt]    # Password hashing library with bcrypt support
 # bcrypt package is optional here since passlib[bcrypt] installs a compatible version
 python-jose==3.3.0
 
@@ -33,9 +33,9 @@ python-dotenv==1.0.1      # Load .env files for settings
 # -------------------------
 # Optional async helpers (not required for sync DB usage)
 # -------------------------
-# anyio==3.7.0
+# anyio
 
-jinja2==3.2.1
+jinja2
 python-multipart
 gTTS
 itsdangerous
