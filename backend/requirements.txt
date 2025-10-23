@@ -39,5 +39,4 @@ python-multipart
 gTTS
 itsdangerous
 python-multipart 
-fastapi
 pytz
