@@ -13,7 +13,6 @@ from app.models import user  # import all models here
 from app.models.word import Word, UserActivity
 from app.core.config import settings  # ✅ use your Pydantic Settings
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))  # add project root to path
 
 # Alembic config
 config = context.config
@@ -23,7 +22,7 @@ fileConfig(config.config_file_name)
 target_metadata = Base.metadata
 
 # ✅ Use the DATABASE_URL from your app settings
-config.set_main_option("sqlalchemy.url", str(settings.DATABASE_URL))
+config.set_main_option("sqlalchemy.url",  str(settings.DATABASE_DIRECT_URL))
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode."""
