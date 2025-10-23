@@ -2,7 +2,7 @@
 # Web framework
 # -------------------------
 fastapi          # Core FastAPI framework
-uvicorn[standard]==0.23.2 # ASGI server with optional extras (watchfiles, websockets)
+uvicorn[standard] # ASGI server with optional extras (watchfiles, websockets)
 
 # -------------------------
 # Database
