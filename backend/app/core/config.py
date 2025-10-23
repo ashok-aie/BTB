@@ -3,7 +3,7 @@ import os
 from typing import Optional
 
 class Settings(BaseSettings):
-    DATABASE_URL: postgresql://postgres.wxctkrgdnrjvangebnso:Tamaya1BtBeeAai@aws-1-us-east-2.pooler.supabase.com:6543/postgres?pgbouncer=true
+    DATABASE_URL: postgresql+psycopg2://postgres.wxctkrgdnrjvangebnso:Tamaya1BtBeeAai@aws-1-us-east-2.pooler.supabase.com:6543/postgres?pgbouncer=true
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
