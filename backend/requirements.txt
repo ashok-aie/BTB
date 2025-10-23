@@ -1,7 +1,7 @@
 # -------------------------
 # Web framework
 # -------------------------
-fastapi==0.111.2          # Core FastAPI framework
+fastapi          # Core FastAPI framework
 uvicorn[standard]==0.23.2 # ASGI server with optional extras (watchfiles, websockets)
 
 # -------------------------
