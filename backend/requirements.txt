@@ -1,3 +1,4 @@
+python_version == "3.9"
 # -------------------------
 # Web framework
 # -------------------------
@@ -7,7 +8,7 @@ uvicorn[standard] # ASGI server with optional extras (watchfiles, websockets)
 # -------------------------
 # Database
 # -------------------------
-SQLAlchemy==2.1.2         # ORM for database interaction
+SQLAlchemy         # ORM for database interaction
 psycopg2-binary==2.9.7   # PostgreSQL driver
 alembic==1.12.3           # Database migrations
 
