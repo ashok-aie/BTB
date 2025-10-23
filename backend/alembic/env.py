@@ -8,6 +8,7 @@ from alembic import context
 # Add project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# Import your app modules
 from app.db.database import Base
 from app.models import user  # import all models here
 from app.models.word import Word, UserActivity
@@ -21,8 +22,12 @@ fileConfig(config.config_file_name)
 # target metadata for autogenerate
 target_metadata = Base.metadata
 
-# ✅ Use the DATABASE_URL from your app settings
-config.set_main_option("sqlalchemy.url",  str(settings.DATABASE_DIRECT_URL))
+# ✅ Use DATABASE_DIRECT_URL from environment (via settings)
+db_url = str(settings.DATABASE_DIRECT_URL)
+if not db_url:
+    raise ValueError("DATABASE_DIRECT_URL environment variable is not set")
+
+config.set_main_option("sqlalchemy.url", db_url)
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode."""
@@ -31,6 +36,7 @@ def run_migrations_offline():
         url=url,
         target_metadata=target_metadata,
         literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
     )
 
     with context.begin_transaction():
@@ -42,7 +48,10 @@ def run_migrations_online():
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
+        poolclass=pool.QueuePool,  # Use QueuePool for Supabase pooler
+        pool_size=5,
+        max_overflow=10,
+        pool_timeout=30,
     )
 
     with connectable.connect() as connection:
