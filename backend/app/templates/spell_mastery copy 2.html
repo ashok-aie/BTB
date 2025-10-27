@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Spell Mastery</title>
+    <style>
+        /* Basic body styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #cce5ff, #e6f2ff);
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Go Back button */
+        .go-back-btn {
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        /* Main container styling */
+        .container {
+            margin-top: 20px;
+            background: white;
+            border-radius: 15px;
+            width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        /* Timer bar styling */
+        .timer-bar {
+            height: 20px;
+            width: 100%;
+            background: #ddd;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timer-fill {
+            height: 100%;
+            width: 100%;
+            background: green;
+            transition: width 1s linear, background 1s linear;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* Heading */
+        h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #007BFF;
+        }
+
+        /* Top row for progress, hear word, next button */
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Input styling */
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+        }
+
+        /* Word details styling */
+        .word-details {
+            margin-top: 25px;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .column {
+            flex: 1;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #444;
+        }
+
+        .value {
+            color: #007BFF;
+        }
+
+        .word-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .speak {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #007BFF;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .speak:hover {
+            color: #0056b3;
+        }
+
+        .result-message {
+            font-size: 18px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        #nextBtn {
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Page Heading -->
+        <h2>Spell Mastery</h2>
+
+        <!-- Timer bar -->
+        <div class="timer-bar">
+            <div id="timerFill" class="timer-fill">02:00</div>
+        </div>
+
+        <!-- Top row: Word progress left, Hear Word + result center, Next button right -->
+        <div class="top-row">
+            <span id="progress">Word 1 of {{ words | length }}</span>
+
+            <!-- Hear Word button -->
+            <div>
+                <button onclick="playWord()">🔊 Hear Word</button>
+                <span id="resultMessage" class="result-message"></span>
+            </div>
+
+            <!-- Next button -->
+            <button onclick="nextWord()" id="nextBtn" style="display: none;">Next ➡️</button>
+        </div>
+
+        <!-- Input field for user spelling -->
+        <input type="text" id="userInput" placeholder="Type your spelling..."
+            onkeydown="if(event.key==='Enter') checkSpelling()" />
+        <button onclick="checkSpelling()">Check</button>
+
+        <!-- Word details container -->
+        <div id="wordContainer" class="word-details"></div>
+    </div>
+
+    <script>
+        const words = {{ words | tojson }};
+        let current = 0;
+        let timer;
+        const TOTAL_TIME = 120;
+        let timeLeft = TOTAL_TIME;
+
+        function speakText(text) {
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.rate = 1;
+            window.speechSynthesis.speak(utter);
+        }
+
+        function playAudio(text) {
+            const audio = new Audio(`/tts/?text=${encodeURIComponent(text)}`);
+            audio.play();
+        }
+
+        function playWord() {
+            playAudio(words[current].word);
+        }
+
+        function playSection(section) {
+            const w = words[current];
+            let text = '';
+            switch (section) {
+                case 'pos': text = `Part of speech is ${w.part_of_speech}.`; break;
+                case 'origin': text = `Language origin is ${w.origin}.`; break;
+                case 'definition': text = `Definition: ${w.definition}.`; break;
+                case 'example': text = `Example: ${w.example}.`; break;
+            }
+            playAudio(text);
+        }
+
+        function updateProgress() {
+            document.getElementById("progress").innerText = `Word ${current + 1} of ${words.length}`;
+        }
+
+        function loadWordDetails(showHidden = false) {
+            const w = words[current];
+            const pos = showHidden ? `<span class='value'>${w.part_of_speech}</span>` : "________";
+            const origin = showHidden ? `<span class='value'>${w.origin}</span>` : "________";
+            const def = showHidden ? `<span class='value'>${w.definition}</span>` : "________";
+            const ex = showHidden ? `<span class='value'>${w.example}</span>` : "________";
+
+            const html = `
+      <div class="word-title">${showHidden ? "Word: " + w.word : ""}</div>
+      <div class="row">
+        <div class="column">
+          <span class="label">Part of Speech:</span> ${pos}
+          <button class="speak" onclick="playSection('pos')">🔊</button>
+        </div>
+        <div class="column">
+          <span class="label">Origin:</span> ${origin}
+          <button class="speak" onclick="playSection('origin')">🔊</button>
+        </div>
+      </div>
+      <p><span class="label">Definition:</span> ${def}
+        <button class="speak" onclick="playSection('definition')">🔊</button>
+      </p>
+      <p><span class="label">Example:</span> ${ex}
+        <button class="speak" onclick="playSection('example')">🔊</button>
+      </p>
+      ${showHidden ? `<p><span class="label">Difficulty:</span> <span class='value'>${w.difficulty}</span></p>` : ""}
+    `;
+            document.getElementById("wordContainer").innerHTML = html;
+        }
+
+        function checkSpelling() {
+            const userWord = document.getElementById("userInput").value.trim().toLowerCase();
+            const w = words[current];
+            const correctWord = w.word.toLowerCase();
+            const resultMessage = document.getElementById("resultMessage");
+            const nextBtn = document.getElementById("nextBtn");
+
+            if (userWord === correctWord) {
+                resultMessage.innerText = "✅ Correct!";
+                resultMessage.style.color = "green";
+                speakText("That's Correct!");
+            } else {
+                resultMessage.innerText = "❌ Incorrect!";
+                resultMessage.style.color = "red";
+                speakText("That's Incorrect!");
+            }
+
+            loadWordDetails(true);
+            nextBtn.style.display = "inline-block";
+            clearInterval(timer);
+        }
+
+        function nextWord() {
+            current++;
+            if (current >= words.length) {
+                document.querySelector(".container").innerHTML = "<h2>🎉 Quiz Complete! Great job!</h2>";
+                clearInterval(timer);
+                return;
+            }
+            document.getElementById("userInput").value = "";
+            document.getElementById("resultMessage").innerText = "";
+            document.getElementById("nextBtn").style.display = "none";
+            loadWordDetails(false);
+            updateProgress();
+            playWord();
+            resetTimer();
+        }
+
+        function startTimer() {
+            const fill = document.getElementById("timerFill");
+            timeLeft = TOTAL_TIME;
+            fill.style.width = "100%";
+            fill.style.background = "green";
+
+            timer = setInterval(() => {
+                timeLeft--;
+                const percent = (timeLeft / TOTAL_TIME) * 100;
+                fill.style.width = percent + "%";
+
+                if (timeLeft <= 30) fill.style.background = "red";
+                else if (timeLeft <= 75) fill.style.background = "yellow";
+                else fill.style.background = "green";
+
+                const minutes = Math.floor(timeLeft / 60).toString().padStart(2, "0");
+                const seconds = (timeLeft % 60).toString().padStart(2, "0");
+                fill.innerText = `${minutes}:${seconds}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    const resultMessage = document.getElementById("resultMessage");
+                    resultMessage.innerText = "⏰ Time's up!";
+                    resultMessage.style.color = "red";
+                    document.getElementById("nextBtn").style.display = "inline-block";
+                    loadWordDetails(true);
+                }
+            }, 1000);
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            startTimer();
+        }
+
+        // Initialize page
+        updateProgress();
+        loadWordDetails(false);
+        startTimer();
+    </script>
+    <!-- Go Back button outside the main white container -->
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="/landing" class="go-back-btn">Go Back to Home</a>
+    </div>
+</body>
+
+</html>

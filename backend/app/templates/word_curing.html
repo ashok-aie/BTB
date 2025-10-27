@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Word Curing 💖</title>
+    <style>
+        body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(to bottom right, #fbeaff, #fde2e4, #fff1f6);
+            text-align: center;
+            padding: 30px;
+            color: #4b2e83;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #a020f0;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            width: 400px;
+            text-align: left;
+        }
+
+        label {
+            font-weight: 600;
+            margin-top: 10px;
+            display: block;
+            color: #6a0dad;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #a020f0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background-color: #7d00cc;
+        }
+
+        .word-table {
+            margin-top: 40px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            border-collapse: collapse;
+        }
+
+        .word-table th,
+        .word-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .word-table th {
+            background-color: #f3d9fa;
+        }
+
+        .home-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #f06292;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .home-btn:hover {
+            background-color: #ec407a;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🩷 Word Curing Zone 🩷</h1>
+    <p>Here you can add new words or update existing ones!</p>
+
+    <form action="/word_curing/add" method="post">
+        <label>Word</label>
+        <input type="text" name="word" required>
+
+        <label>Definition</label>
+        <textarea name="definition"></textarea>
+
+        <label>Part of Speech</label>
+        <input type="text" name="part_of_speech">
+
+        <label>Language Origin</label>
+        <input type="text" name="language_origin">
+
+        <label>Example</label>
+        <textarea name="example"></textarea>
+
+        <label>Root Word</label>
+        <input type="text" name="root_word">
+
+        <button type="submit">💾 Save Word</button>
+    </form>
+
+    <table class="word-table">
+        <tr>
+            <th>Word</th>
+            <th>Definition</th>
+            <th>Origin</th>
+            <th>Part of Speech</th>
+            <th>Example</th>
+            <th>Root</th>
+        </tr>
+        {% for w in words %}
+        <tr>
+            <td>{{ w.word }}</td>
+            <td>{{ w.definition }}</td>
+            <td>{{ w.language_origin }}</td>
+            <td>{{ w.part_of_speech }}</td>
+            <td>{{ w.example }}</td>
+            <td>{{ w.root_word }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <button class="home-btn" onclick="window.location.href='/landing'">🏠 Go Back Home</button>
+
+</body>
+
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Spell Bee Adventure 🐝</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    <style>
+        /* --------------------- */
+        /* Page Background & Fonts */
+        /* --------------------- */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1c1c1c, #2d2d2d);
+            color: #fff8c3;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Honeycomb Background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("/static/images/honeycomb.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.6;
+            z-index: -1;
+        }
+
+        /* --------------------- */
+        /* Header */
+        /* --------------------- */
+        header {
+            text-align: center;
+            padding: 40px 20px 20px 20px;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            color: #a0ea8f;
+            text-shadow: 1px 1px 6px #0d0c0c;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            margin: 5px 0 20px 0;
+        }
+
+        /* --------------------- */
+        /* Bee Animation */
+        /* --------------------- */
+        .bee {
+            position: absolute;
+            width: 180px;
+            z-index: 10;
+            top: 0;
+            left: 0;
+            animation: fly 20s infinite linear;
+        }
+
+        @keyframes fly {
+            0% {
+                top: 0;
+                left: 0;
+                transform: rotate(0deg);
+            }
+
+            25% {
+                top: 50px;
+                left: 50%;
+                transform: rotate(10deg);
+            }
+
+            50% {
+                top: 100px;
+                left: 80%;
+                transform: rotate(10deg);
+            }
+
+            75% {
+                top: 50px;
+                left: 20%;
+                transform: rotate(10deg);
+            }
+
+            100% {
+                top: 0;
+                left: 0;
+                transform: rotate(0deg);
+            }
+        }
+
+        /* --------------------- */
+        /* Main Content Grid */
+        /* --------------------- */
+        .grid {
+            display: grid;
+            grid-template-columns: 3fr 2fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(64, 62, 62, 0.95);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(6px);
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        /* Buttons & Dropdown */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        button,
+        select {
+            background-color: #f6c90e;
+            color: #1f1f1f;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #ffe066;
+            transform: scale(1.05);
+        }
+
+        select {
+            background-color: #333;
+            color: #f6c90e;
+            border: 1px solid #f6c90e;
+        }
+
+        /* Calendar & Charts */
+        .calendar {
+            margin-top: 10px;
+        }
+
+        canvas {
+            margin-top: 15px;
+        }
+
+        /* Responsive */
+        @media(max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Welcome to Your Spell Bee Adventure, Ruthsika 🐝✨</h1>
+        <p>Every word you master makes your wings stronger!</p>
+        <img src="/static/images/bee.png" class="bee" alt="Flying Bee">
+    </header>
+
+    <div class="grid">
+        <!-- Overall Stats -->
+        <div class="card">
+            <h2>📊 Overall Progress</h2>
+            <div class="stats-grid">
+                <div class="stat">
+                    <h3>{{ accuracy }}%</h3>
+                    <p>Accuracy</p>
+                </div>
+                <div class="stat">
+                    <h3>{{ total_correct }}</h3>
+                    <p>Correct</p>
+                </div>
+                <div class="stat">
+                    <h3>{{ total_wrong }}</h3>
+                    <p>Misspelled</p>
+                </div>
+                <div class="stat">
+                    <h3>{{ total_words }}</h3>
+                    <p>Total Words</p>
+                </div>
+            </div>
+            <canvas id="overallChart"></canvas>
+        </div>
+
+        <!-- Streak Calendar -->
+        <div class="card calendar">
+            <h2>🔥 Streak Calendar</h2>
+            <div id="calendar"></div>
+        </div>
+    </div>
+
+    <!-- Last 10 Days Charts -->
+    <div class="grid">
+        <div class="card">
+            <h2>📅 Last 10 Days Progress</h2>
+            <canvas id="last10DaysChart"></canvas>
+        </div>
+
+        <div class="card">
+            <h2>🎯 Accuracy (Last 10 Days)</h2>
+            <canvas id="accuracyChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+        <select id="gradeLevel">
+            <option value="">Select Grade</option>
+            <option value="4">Grade 4</option>
+            <option value="5">Grade 5</option>
+            <option value="6">Grade 6</option>
+        </select>
+        <button onclick="goTo('spell_mastery')">Go to Spell Mastery 🪄</button>
+        <button onclick="goTo('vocab_mastery')">Go to Vocab Mastery 📘</button>
+        <button onclick="goTo('word_curing')">Go to Word Curing 🧪</button>
+    </div>
+
+    <script>
+        // --------- Navigation ---------
+        function goTo(page) {
+            const grade = document.getElementById('gradeLevel').value;
+            window.location.href = `/${page}?grade=${grade}`;
+        }
+
+        // --------- Streak Calendar ---------
+        const streakDates = {{ streak_dates | tojson }};
+        flatpickr("#calendar", {
+            inline: true,
+            defaultDate: streakDates,
+            mode: "multiple",
+            dateFormat: "Y-m-d"
+        });
+
+        // --------- Overall Chart ---------
+        new Chart(document.getElementById("overallChart"), {
+            type: "bar",
+            data: {
+                labels: ["Correct", "Misspelled"],
+                datasets: [{
+                    data: [{{ total_correct }}, {{ total_wrong }}],
+            backgroundColor: ["#ffeb3b", "#f44336"]
+        }]
+      },
+            options: { plugins: { legend: { display: false } } }
+    });
+
+        // --------- Last 10 Days Chart ---------
+        const days = {{ days | tojson }};
+        const correctCounts = {{ correct_counts | tojson }};
+        const wrongCounts = {{ wrong_counts | tojson }};
+        const accuracyByDay = {{ accuracy_by_day | tojson }};
+
+        new Chart(document.getElementById("last10DaysChart"), {
+            type: "bar",
+            data: {
+                labels: days,
+                datasets: [
+                    { label: "Correct", data: correctCounts, backgroundColor: "#ffeb3b" },
+                    { label: "Wrong", data: wrongCounts, backgroundColor: "#f44336" }
+                ]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+
+        new Chart(document.getElementById("accuracyChart"), {
+            type: "line",
+            data: {
+                labels: days,
+                datasets: [{
+                    label: "Accuracy %",
+                    data: accuracyByDay,
+                    borderColor: "#4caf50",
+                    fill: false,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                scales: { y: { min: 0, max: 100 } },
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Vocab Mastery 💖</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Comic+Neue:wght@700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(120deg, #f3e6ff, #fff0f5);
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h2 {
+            font-family: 'Comic Neue', cursive;
+            color: #8a2be2;
+            font-size: 34px;
+            margin-top: 30px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            background: #f9f3ff;
+            width: 85%;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+
+        .scoreboard {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #7b1fa2;
+            margin-bottom: 15px;
+            font-size: 18px;
+            flex-direction: column;
+        }
+
+        #rubiesBarContainer {
+            position: relative;
+            width: 300px;
+            height: 30px;
+            background: #f3d1f9;
+            border-radius: 15px;
+            margin: 10px auto;
+        }
+
+        #rubyMoving {
+            position: absolute;
+            top: 2px;
+            left: 0;
+            font-size: 24px;
+        }
+
+        #rubyCount {
+            position: absolute;
+            top: -28px;
+            left: 0;
+            font-weight: bold;
+            color: #b030b0;
+        }
+
+        #timerContainer {
+            width: 100%;
+            height: 20px;
+            background: #e3c3f9;
+            border-radius: 10px;
+            margin: 10px auto;
+            position: relative;
+        }
+
+        #timerBar {
+            height: 100%;
+            width: 100%;
+            background: #8a2be2;
+            border-radius: 10px;
+            transition: width 1s linear;
+        }
+
+        #timerText {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 0;
+            left: 0;
+            font-weight: bold;
+            color: white;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            border: 2px solid #d8aaff;
+            border-radius: 12px;
+            font-size: 18px;
+            text-align: center;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #8a2be2;
+            box-shadow: 0 0 6px rgba(138, 43, 226, 0.4);
+        }
+
+        button {
+            background: #8a2be2;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #6920a5;
+        }
+
+        .word-details {
+            margin-top: 25px;
+            background: #f3e6ff;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: left;
+            display: none;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #8a2be2;
+        }
+
+        .value {
+            color: #a020f0;
+        }
+
+        .result {
+            font-size: 20px;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .result.correct {
+            color: #28a745;
+        }
+
+        .result.incorrect {
+            color: #ff4444;
+        }
+
+        #back-home-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #a020f0;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .sparkle-ruby {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            animation: floatRuby 1.2s ease-out forwards;
+        }
+
+        @keyframes floatRuby {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-15px) scale(0.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2>💖 Vocab Mastery 💎</h2>
+
+    <div class="container">
+        <div class="scoreboard">
+            <div id="rubiesBarContainer">
+                <div id="rubyMoving">💖</div>
+                <div id="rubyCount">0 💖</div>
+            </div>
+
+            <div id="timerContainer">
+                <div id="timerBar"></div>
+                <div id="timerText">02:00</div>
+            </div>
+        </div>
+
+        <h3 id="progress">Word 1 of {{ total_words }}</h3>
+
+        <div style="margin:20px 0;">
+            <button onclick="playWord()" style="padding:12px 20px; font-size:18px;">🔊 Play Word</button>
+        </div>
+
+        <div style="margin:15px 0;">
+            <button onclick="playField('definition')">🔊 Play Definition</button>
+            <button onclick="playField('origin')">🔊 Play Origin</button>
+            <button onclick="playField('part_of_speech')">🔊 Play Part of Speech</button>
+            <button onclick="playField('example')">🔊 Play Example</button>
+        </div>
+
+        <input type="text" id="userInput" placeholder="Type the word meaning or synonym here..." />
+        <br />
+        <button onclick="checkAnswer()">Check</button>
+
+        <div id="result" class="result"></div>
+        <div id="wordDetails" class="word-details"></div>
+        <button id="nextBtn" onclick="nextWord()" style="display:none;">Next ➡️</button>
+    </div>
+
+    <a href="/landing" id="back-home-btn">🏠 Home</a>
+
+    <script>
+        const words_selected = {{ words_selected | tojson }};
+        let current = 0;
+        let rubies = 0;
+        const maxRubies = 25;
+        let timeLeft = 120;
+        let timer;
+        let rewardLocked = false;
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+                const seconds = String(timeLeft % 60).padStart(2, '0');
+                document.getElementById('timerText').innerText = `${minutes}:${seconds}`;
+                document.getElementById('timerBar').style.width = (timeLeft / 120 * 100) + '%';
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById('result').innerText = "⏰ Time’s up!";
+                    document.getElementById('result').className = "result incorrect";
+                    document.getElementById('wordDetails').style.display = 'block';
+                    rewardLocked = true;
+                }
+            }, 1000);
+        }
+
+        function playAudio(text) {
+            const audio = new Audio(`/tts/?text=${encodeURIComponent(text)}`);
+            audio.play();
+        }
+
+        function playWord() {
+            const w = words_selected[current];
+            if (w) playAudio(w.word);
+        }
+
+        function playField(field) {
+            const w = words_selected[current];
+            if (!w) return;
+            let text = "";
+            switch (field) {
+                case 'definition':
+                    text = "Definition: " + w.definition;
+                    break;
+                case 'origin':
+                    text = "Origin: " + w.language_origin;
+                    break;
+                case 'part_of_speech':
+                    text = "Part of Speech: " + w.part_of_speech;
+                    break;
+                case 'example':
+                    text = "Example: " + w.example;
+                    break;
+            }
+            playAudio(text);
+        }
+
+        function updateRubyMoving() {
+            const ruby = document.getElementById("rubyMoving");
+            const barContainer = document.getElementById("rubiesBarContainer");
+            const barWidth = barContainer.offsetWidth - 24;
+            const leftPos = Math.min((rubies / maxRubies) * barWidth, barWidth);
+            ruby.style.left = leftPos + "px";
+            document.getElementById("rubyCount").innerText = rubies + " 💖";
+
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle-ruby');
+            sparkle.style.left = (leftPos + Math.random() * 20 - 10) + "px";
+            sparkle.style.top = (Math.random() * 10 + 5) + "px";
+            barContainer.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 1200);
+        }
+
+        function showDetails(word) {
+            const div = document.getElementById('wordDetails');
+            div.innerHTML = `
+        <p><span class="label">Word:</span> <span class="value">${word.word}</span></p>
+        <p><span class="label">Definition:</span> ${word.definition}</p>
+        <p><span class="label">Origin:</span> ${word.language_origin}</p>
+        <p><span class="label">Part of Speech:</span> ${word.part_of_speech}</p>
+        <p><span class="label">Example:</span> ${word.example}</p>`;
+            div.style.display = 'block';
+        }
+
+        function checkAnswer() {
+            if (rewardLocked) return;
+            rewardLocked = true;
+            const userInput = document.getElementById('userInput').value.trim().toLowerCase();
+            const word = words_selected[current];
+            const resultEl = document.getElementById('result');
+            clearInterval(timer);
+
+            const correctAnswers = [word.definition?.toLowerCase(), word.example?.toLowerCase()];
+
+            if (correctAnswers.some(ans => userInput && ans && ans.includes(userInput))) {
+                resultEl.innerText = "✅ Correct!";
+                resultEl.className = "result correct";
+                rubies = Math.min(maxRubies, rubies + 1);
+                playAudio("Great job!");
+            } else {
+                resultEl.innerText = `❌ Try again! Correct clue: "${word.definition}"`;
+                resultEl.className = "result incorrect";
+                rubies = Math.max(0, rubies - 2);
+                playAudio("Incorrect!");
+            }
+
+            updateRubyMoving();
+            showDetails(word);
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        }
+
+        function nextWord() {
+            rewardLocked = false;
+            current++;
+            if (current >= words_selected.length) {
+                document.querySelector('.container').innerHTML = `<h2>🌟 Well done! You earned ${rubies} 💖</h2>`;
+                return;
+            }
+            document.getElementById('userInput').value = '';
+            document.getElementById('wordDetails').style.display = 'none';
+            document.getElementById('result').innerText = '';
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('progress').innerText = `Word ${current + 1} of ${words_selected.length}`;
+            timeLeft = 120;
+            startTimer();
+            updateRubyMoving();
+            playWord();
+        }
+
+        window.onload = () => {
+            if (words_selected.length === 0) {
+                document.querySelector('.container').innerHTML = "<h3>No words available</h3>";
+                return;
+            }
+            startTimer();
+            updateRubyMoving();
+            playWord();
+            document.getElementById('progress').innerText = `Word ${current + 1} of ${words_selected.length}`;
+        };
+    </script>
+</body>
+
+</html>

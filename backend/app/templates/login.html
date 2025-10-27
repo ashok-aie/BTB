@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpellBee Login</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=MedievalSharp&family=Quicksand:wght@500&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            font-family: 'Quicksand', sans-serif;
+            background: radial-gradient(circle at top, #1b1b2f, #0f0f1c 80%);
+            background-image: url('/static/images/login.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: #f5e6cc;
+        }
+
+        .container {
+            background: rgba(15, 15, 30, 0.85);
+            border: 2px solid #ffd700;
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.4);
+            padding: 40px;
+            width: 340px;
+            text-align: center;
+            position: relative;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        h1 {
+            font-family: 'MedievalSharp', cursive;
+            color: #ffd700;
+            text-shadow: 0 0 20px #ffae00;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+            color: #f0e68c;
+            text-shadow: 0 0 5px #ffbf00;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            text-align: center;
+        }
+
+        input::placeholder {
+            color: #ccc;
+        }
+
+        button {
+            width: 60%;
+            padding: 10px;
+            background: linear-gradient(90deg, #ffbf00, #ff9c00);
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px #ffb700;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #ffd700, #ffae00);
+            box-shadow: 0 0 20px #ffd700;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffd700;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ffb700;
+            animation: sparkle 2s infinite ease-in-out;
+        }
+
+        @keyframes sparkle {
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: translateY(0) scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1.5);
+            }
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>SpellBee Login</h1>
+        <form action="/auth/login" method="post">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Enter your magic email" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your secret spell" required>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <!-- Sparkles -->
+        <div class="sparkle" style="top:20px; left:50px;"></div>
+        <div class="sparkle" style="top:100px; right:60px;"></div>
+        <div class="sparkle" style="bottom:50px; left:80px;"></div>
+    </div>
+</body>
+
+</html>

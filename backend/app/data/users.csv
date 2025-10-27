@@ -1,0 +1,5 @@
+"id","username","email","hashed_password"
+1,"Admin","admin@example.com","$2b$12$Ql/znYWhjkeW/HKNPpQX9.XjUpAJZJCBXCeZ8K3wvOQ6HxNOPfu22"
+2,"Ashok","ashok@example.com","$2b$12$xTAVAlQWM6Riaq0rM8KZ8OR2vqNxgRHMRc.iigtnDUUNTHcX.GCmC"
+3,"Ruthsika","ruthsika@example.com","$2b$12$j6pKHzCLa9BkSsK3B3XSDuO/3q9X06rfAOfRJwP3cQ.jYkSXuJxou"
+4,"varahi","varahi@example.com","$2b$12$BeL8CBc.v26dvlI2jSujQOJkwYrE5oqW294nsF3snA4J.459X.Iqq"

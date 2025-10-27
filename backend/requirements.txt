@@ -1,0 +1,50 @@
+
+# -------------------------
+# Web framework
+# -------------------------
+fastapi==0.115.0         # Core FastAPI framework
+uvicorn[standard] # ASGI server with optional extras (watchfiles, websockets)
+
+# -------------------------
+# Database
+# -------------------------
+SQLAlchemy         # ORM for database interaction
+psycopg2-binary==2.9.8   # PostgreSQL driver
+alembic           # Database migrations
+
+# -------------------------
+# Pydantic v2 for settings & validation
+# -------------------------
+pydantic          # Data validation & serialization
+pydantic-settings # Settings management (BaseSettings replacement in v2)
+
+# -------------------------
+# Password hashing
+# -------------------------
+
+bcrypt==4.0.1
+passlib==1.7.4
+
+
+#passlib[bcrypt]    # Password hashing library with bcrypt support
+# bcrypt package is optional here since passlib[bcrypt] installs a compatible version
+python-jose==3.3.0
+
+# -------------------------
+# Environment variables
+# -------------------------
+python-dotenv==1.0.1      # Load .env files for settings
+
+# -------------------------
+# Optional async helpers (not required for sync DB usage)
+# -------------------------
+# anyio
+
+jinja2
+python-multipart
+gTTS
+itsdangerous
+python-multipart==0.0.9
+pytz
+
+
