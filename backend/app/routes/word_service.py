@@ -9,7 +9,7 @@ def fetch_spell_mastery_words(db: Session, grade_level: str = None, total_words:
     Fetch words for Spell Bee Mastery based on user activities and grade filter.
     """
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     #ten_days_ago = now - timedelta(days=10)
     #one_week_ago = now - timedelta(weeks=1)
     ten_days_ago = datetime.now(timezone.utc) - timedelta(days=10)
@@ -40,10 +40,14 @@ def fetch_spell_mastery_words(db: Session, grade_level: str = None, total_words:
 
     # Correctly spelled before 1 week
     correct_old_words = [
-        db.query(Word).get(word_id)
-        for word_id, acts in word_history.items()
-        if any(a.is_correct and a.timestamp <= seven_days_ago for a in acts)
-    ]
+    w for w, acts in word_history.items()
+    if any(a.is_correct and a.timestamp and a.timestamp <= seven_days_ago for a in acts)]
+    
+    #correct_old_words = [
+    #    db.query(Word).get(word_id)
+    #    for word_id, acts in word_history.items()
+    #    if any(a.is_correct and a.timestamp <= seven_days_ago for a in acts)
+    #]
 
     # Never spelled words
     attempted_word_ids = {a.word_id for a in activities}

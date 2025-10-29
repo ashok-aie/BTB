@@ -19,3 +19,4 @@ class WordSchema(BaseModel):
 
     class Config:
         from_attributes = True  # Pydantic v2 replaces orm_mode
+

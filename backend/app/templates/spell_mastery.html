@@ -219,7 +219,7 @@
         <h3 id="progress">Word 1 of {{ total_words }}</h3>
 
         <div style="margin:20px 0;">
-            <button onclick="playWord()" style="padding:12px 20px; font-size:18px;">🔊 Play Word</button>
+            <button onclick="playWord()">🔊 Play Word</button>
         </div>
 
         <div style="margin:15px 0;">
@@ -231,7 +231,7 @@
 
         <input type="text" id="userInput" placeholder="Type your spelling here..." />
         <br />
-        <button onclick="checkSpelling()">Check</button>
+        <button id="checkBtn">Check</button>
 
         <div id="result" class="result"></div>
         <div id="wordDetails" class="word-details"></div>
@@ -242,6 +242,7 @@
 
     <script>
         const words_selected = {{ words_selected | tojson }};
+        const user_id = 3; // default user id
         let current = 0;
         let diamonds = 0;
         const maxDiamonds = 25;
@@ -262,18 +263,20 @@
                     document.getElementById('result').className = "result incorrect";
                     document.getElementById('wordDetails').style.display = 'block';
                     rewardLocked = true;
+                    recordActivity("", false); // record time-out
                 }
             }, 1000);
         }
 
         function playAudio(text) {
+            if (!text) return;
             const audio = new Audio(`/tts/?text=${encodeURIComponent(text)}`);
             audio.play();
         }
 
         function playWord() {
             const w = words_selected[current];
-            if (w) playAudio(w.word);  // Only pronounce the word
+            if (w) playAudio(w.word);
         }
 
         function playField(field) {
@@ -281,18 +284,10 @@
             if (!w) return;
             let text = "";
             switch (field) {
-                case 'definition':
-                    text = "Definition: " + w.definition;
-                    break;
-                case 'origin':
-                    text = "Origin: " + w.language_origin;
-                    break;
-                case 'part_of_speech':
-                    text = "Part of Speech: " + w.part_of_speech;
-                    break;
-                case 'example':
-                    text = "Example: " + w.example;
-                    break;
+                case 'definition': text = "Definition: " + w.definition; break;
+                case 'origin': text = "Origin: " + w.language_origin; break;
+                case 'part_of_speech': text = "Part of Speech: " + w.part_of_speech; break;
+                case 'example': text = "Example: " + w.example; break;
             }
             playAudio(text);
         }
@@ -316,27 +311,48 @@
         function showDetails(word) {
             const div = document.getElementById('wordDetails');
             div.innerHTML = `
-        <p><span class="label">Word:</span> <span class="value">${word.word}</span></p>
-        <p><span class="label">Definition:</span> ${word.definition}</p>
-        <p><span class="label">Origin:</span> ${word.language_origin}</p>
-        <p><span class="label">Part of Speech:</span> ${word.part_of_speech}</p>
-        <p><span class="label">Example:</span> ${word.example}</p>`;
+                <p><span class="label">Word:</span> <span class="value">${word.word}</span></p>
+                <p><span class="label">Definition:</span> ${word.definition}</p>
+                <p><span class="label">Origin:</span> ${word.language_origin}</p>
+                <p><span class="label">Part of Speech:</span> ${word.part_of_speech}</p>
+                <p><span class="label">Example:</span> ${word.example}</p>`;
             div.style.display = 'block';
         }
 
-        function checkSpelling() {
+        async function recordActivity(userInput, isCorrect) {
+            const word = words_selected[current];
+            try {
+                await fetch('/user_activity', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: user_id,
+                        word_id: word.id,
+                        user_input: userInput,
+                        is_correct: isCorrect
+                    })
+                });
+            } catch (err) {
+                console.error("Error recording activity:", err);
+            }
+        }
+
+        async function checkSpelling() {
             if (rewardLocked) return;
             rewardLocked = true;
+
             const userInput = document.getElementById('userInput').value.trim().toLowerCase();
             const word = words_selected[current];
             const resultEl = document.getElementById('result');
             clearInterval(timer);
 
+            let isCorrect = false;
             if (userInput === word.word.toLowerCase()) {
                 resultEl.innerText = "✅ Correct!";
                 resultEl.className = "result correct";
                 diamonds = Math.min(maxDiamonds, diamonds + 1);
                 playAudio("Correct!");
+                isCorrect = true;
             } else {
                 resultEl.innerText = `❌ Incorrect! The correct spelling is "${word.word}".`;
                 resultEl.className = "result incorrect";
@@ -347,6 +363,7 @@
             updateDiamondMoving();
             showDetails(word);
             document.getElementById('nextBtn').style.display = 'inline-block';
+            await recordActivity(userInput, isCorrect);
         }
 
         function nextWord() {
@@ -368,7 +385,7 @@
         }
 
         window.onload = () => {
-            if (words_selected.length === 0) {
+            if (!words_selected || words_selected.length === 0) {
                 document.querySelector('.container').innerHTML = "<h3>No words available</h3>";
                 return;
             }
@@ -376,6 +393,13 @@
             updateDiamondMoving();
             playWord();
             document.getElementById('progress').innerText = `Word ${current + 1} of ${words_selected.length}`;
+
+            // Enter key triggers check
+            document.getElementById('userInput').addEventListener('keydown', (e) => {
+                if (e.key === "Enter") checkSpelling();
+            });
+
+            document.getElementById('checkBtn').addEventListener('click', checkSpelling);
         };
     </script>
 </body>

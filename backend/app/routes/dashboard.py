@@ -46,8 +46,9 @@ def calculate_rewards(db: Session, user_id: int):
 
     return diamonds, rubies
 
+
 def get_dashboard_data(db: Session, user_id: int):
-    """Return all dashboard data needed for frontend."""
+    """Return all dashboard data needed for frontend, safely handling None values."""
 
     # --- Fetch user activity ---
     activities = db.query(UserActivity).filter(UserActivity.user_id == user_id).all()
@@ -79,13 +80,9 @@ def get_dashboard_data(db: Session, user_id: int):
     )
 
     # --- Mastered Words ---
-    # Words spelled correctly >=10 times
     mastered_words = (
         db.query(func.count(func.distinct(UserActivity.word_id)))
-        .filter(
-            UserActivity.user_id == user_id,
-            UserActivity.is_correct == True
-        )
+        .filter(UserActivity.user_id == user_id, UserActivity.is_correct == True)
         .group_by(UserActivity.word_id)
         .having(func.count(UserActivity.word_id) >= 10)
         .all()
@@ -114,28 +111,21 @@ def get_dashboard_data(db: Session, user_id: int):
         .all()
     )
 
-    # Format recent data for charts
-    days = [r.day.strftime("%Y-%m-%d") for r in recent_data][::-1]
-    correct_counts = [int(r.correct or 0) for r in recent_data][::-1]
-    wrong_counts = [int(r.wrong or 0) for r in recent_data][::-1]
+    # Format recent data safely
+    days = [r.day.strftime("%Y-%m-%d") for r in recent_data if r.day is not None][::-1]
+    correct_counts = [int(r.correct or 0) for r in recent_data if r.day is not None][::-1]
+    wrong_counts = [int(r.wrong or 0) for r in recent_data if r.day is not None][::-1]
     accuracy_by_day = [
         round((r.correct / (r.correct + r.wrong) * 100), 2)
-        if (r.correct + r.wrong) > 0
-        else 0
-        for r in recent_data
+        if (r.correct + r.wrong) > 0 else 0
+        for r in recent_data if r.day is not None
     ][::-1]
 
     # Distinct grade levels for dropdown
     grade_levels = [g[0] for g in db.query(distinct(Word.grade_level)).order_by(Word.grade_level).all()]
-    
 
+    # --- Rewards ---
     diamonds, rubies = calculate_rewards(db, user_id)
-    print('/n')
-    print("Diamonds:", diamonds, "Rubies:", rubies)
-    # --- Debug Logging ---
-    #print(f"[DEBUG] Total correct: {total_correct}, Total wrong: {total_wrong}")
-    #print(f"[DEBUG] Never spelled: {never_spelled}, Mastered: {mastered_count}")
-    #print(f"[DEBUG] Last 10 days: {list(zip(days, correct_counts, wrong_counts, accuracy_by_day))}")
 
     # --- Return all data ---
     return {
